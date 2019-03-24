@@ -19,6 +19,10 @@ const mutations = {
       },
     }, info
     )
+  },
+  deleteItem(parent, args, ctx, info) {
+    const where = { id: args.id };
+
   }
 };
 

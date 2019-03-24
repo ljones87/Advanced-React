@@ -1,6 +1,6 @@
 import UpdateItem from '../components/UpdateItem';
 
-const Update = ({ query }) => {
+const Update = ({query}) => {
   return (
     <div>
       <UpdateItem id={query.id} />
