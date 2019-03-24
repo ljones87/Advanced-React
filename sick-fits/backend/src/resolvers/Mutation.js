@@ -20,9 +20,14 @@ const mutations = {
     }, info
     )
   },
-  deleteItem(parent, args, ctx, info) {
+  async deleteItem(parent, args, ctx, info) {
     const where = { id: args.id };
-
+    // 1 find item
+    const item = await ctx.db.query.item({ where }, `{id title}`)
+    //2 check if person deleting it downs it/has permissions
+     //todo
+    //delete
+    return ctx.db.mutation.deleteItem({where}, info);
   }
 };
 
