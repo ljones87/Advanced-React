@@ -1,11 +1,10 @@
+import Items from '../components/Items';
 
+const Home = props => (
+  <div>
+    <Items />
+  </div>
+)
 
-const Home = (props) => {
-  return (
-    <div>
-      <p>Hey!</p>
-    </div>
-  );
-}
 
 export default Home;
