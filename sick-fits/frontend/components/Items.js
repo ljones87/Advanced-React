@@ -31,8 +31,8 @@ const ItemList = styled.div`
 `;
 
 export default class Items extends Component {
+
   render() {
-    console.log("items Props", this.props)
     return (
       <Center>
         <Pagination page={this.props.page} />
