@@ -27,7 +27,7 @@ const handleSubmit = (
 ) => {
   const { refetch } = props.data
   props
-    .mutate({ variables: values }, {refetchQueries: CURRENT_USER_QUERY})
+    .mutate({ variables: values })
     .then(() => {
       refetch(CURRENT_USER_QUERY)
       resetForm();
