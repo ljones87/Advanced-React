@@ -1,19 +1,20 @@
-import React, { Component, useState } from "react";
+import React, { useMemo } from "react";
 import gql from "graphql-tag";
-import { graphql, compose } from "react-apollo";
+import Cookies from 'js-cookie';
+import { graphql, compose, Mutation, Query } from "react-apollo";
 import { withFormik, Field, Form as FormikForm } from "formik";
 import { CURRENT_USER_QUERY } from './User';
 
 import StyledForm from "./styles/StyledForm";
 import Error from "./ErrorMessage";
 
-const SIGNUP_MUTATION = gql`
-  mutation SIGNUP_MUTATION(
+
+const SIGNIN_MUTATION = gql`
+  mutation SIGNIN_MUTATION(
     $email: String!
-    $name: String!
     $password: String!
   ) {
-    signup(email: $email, name: $name, password: $password) {
+    signin(email: $email, password: $password) {
       id
       email
       name
@@ -27,7 +28,7 @@ const handleSubmit = (
 ) => {
   const { refetch } = props.data
   props
-    .mutate({ variables: values }, {refetchQueries: CURRENT_USER_QUERY})
+    .mutate({ variables: values })
     .then(() => {
       refetch(CURRENT_USER_QUERY)
       resetForm();
@@ -38,50 +39,45 @@ const handleSubmit = (
     });
 };
 
-let Signup = props => {
+let SignIn = props => {
   const email = "email";
   const password = "password";
-  const name = "name";
   const { isSubmitting, errors } = props;
 
   return (
+
     <StyledForm>
       <FormikForm method="post" onSubmit={props.handleSubmit}>
         <fieldset disabled={isSubmitting} aria-busy={isSubmitting}>
-          <h2>Sign up for account</h2>
+          <h2>Sign In</h2>
           <Error error={errors} />
           <label>
             Email
             <Field type={email} name={email} placeholder="Email" />
           </label>
           <label>
-            Name
-            <Field type={name} name={name} placeholder="Name" />
-          </label>
-          <label>
             Password
             <Field type={password} name={password} placeholder="Password" />
           </label>
-          <button type="submit">Sign Up</button>
+          <button type="submit">Submit</button>
         </fieldset>
       </FormikForm>
     </StyledForm>
   );
 };
 
-Signup = compose(
-  graphql(SIGNUP_MUTATION),
+SignIn = compose(
+  graphql(SIGNIN_MUTATION),
   graphql(CURRENT_USER_QUERY),
   withFormik({
     mapPropsToValues({ email, password, name }) {
       return {
         email: email || "",
         password: password || "",
-        name: name || ""
       };
     },
     handleSubmit
   })
-)(Signup);
+)(SignIn);
 
-export default Signup;
+export default SignIn;

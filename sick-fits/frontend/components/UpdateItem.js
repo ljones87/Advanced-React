@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Mutation, Query } from 'react-apollo';
 import Router from 'next/router'
-import Form from './styles/Form';
+import Form from ;
 import formatMoney from '../lib/formatMoney';
 import gql from 'graphql-tag';
 import Error from './ErrorMessage';
