@@ -70,7 +70,7 @@ SignIn = compose(
   graphql(SIGNIN_MUTATION),
   graphql(CURRENT_USER_QUERY),
   withFormik({
-    mapPropsToValues({ email, password, name }) {
+    mapPropsToValues({ email, password }) {
       return {
         email: email || "",
         password: password || "",
