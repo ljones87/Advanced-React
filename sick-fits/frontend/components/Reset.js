@@ -2,7 +2,7 @@ import React from "react";
 import gql from "graphql-tag";
 import { graphql, compose } from "react-apollo";
 import { withFormik, Field, Form as FormikForm } from "formik";
-
+import { CURRENT_USER_QUERY } from './User';
 import StyledForm from "./styles/StyledForm";
 import Error from "./ErrorMessage";
 
@@ -26,9 +26,11 @@ const handleSubmit = (
   values,
   { props, resetForm, setErrors, setSubmitting, setStatus }
 ) => {
+  const { refetch } = props.data
   props
     .resetPassword({ variables: values })
     .then((res) => {
+      refetch(CURRENT_USER_QUERY)
       resetForm();
       setStatus(res.data.resetPassword)
     })
@@ -41,11 +43,9 @@ const handleSubmit = (
 let RequestReset = props => {
   const password = "password";
   const confirmPassword = "confirmPassword"
-  const { isSubmitting, errors, status } = props;
-  const resetToken = props.resetToken;
-    console.log(props)
-  return (
+  const { isSubmitting, errors, status, resetToken } = props;
 
+  return (
     <StyledForm>
       <FormikForm method="post" onSubmit={props.handleSubmit}>
         <fieldset disabled={isSubmitting} aria-busy={isSubmitting}>
@@ -72,6 +72,7 @@ let RequestReset = props => {
 
 RequestReset = compose(
   graphql(RESET_MUTATION, { name: 'resetPassword' }),
+  graphql(CURRENT_USER_QUERY),
   withFormik({
     mapPropsToValues({ password, confirmPassword, resetToken}) {
       return {

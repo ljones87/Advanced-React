@@ -17,8 +17,6 @@ const SignOut = props => {
   const signout = () =>  {
       mutate().then(() => refetch(CURRENT_USER_QUERY))
   }
-  
-  console.log(props);
   return (
     <button onClick={signout}>
       Sign Out

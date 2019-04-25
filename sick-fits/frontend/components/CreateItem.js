@@ -59,18 +59,21 @@ export default class CreateItem extends Component {
     })
   }
 
+  createItem = async (e) => {
+    console.log('SUBMIT CLICKED')
+    e.preventDefault();
+    const res = await createItem(this.state)
+    Router.push({
+      pathname: '/item',
+      query: { id: res.data.createItem.id}
+    })
+  }
+
   render() {
     return (
       <Mutation mutation={CREATE_ITEM_MUTATION} variables={this.state}>
         {(createItem, { loading, error, called, data }) => (
-          <Form onSubmit={async (e) => {
-            e.preventDefault();
-            const res = await createItem(this.state)
-            Router.push({
-              pathname: '/item',
-              query: { id: res.data.createItem.id}
-            })
-          }}>
+          <Form >
             <Error error={error} />
             <fieldset disabled={loading} aria-busy={loading}>
             <label htmlFor="title">File
@@ -117,7 +120,7 @@ export default class CreateItem extends Component {
                   onChange={this.handleChange}
                 />
               </label>
-              <button type="submit">Submit</button>
+              <button type="submit" onClick={createItem}>Submit</button>
             </fieldset>
           </Form>
         )}

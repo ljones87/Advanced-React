@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { randomBytes } = require('crypto');
 const { promisify } = require('util');
+const { transport, makeNiceEmail } = require('../mail');
 
 const cookieSettings = {
   httpOnly: true,
@@ -11,6 +12,9 @@ const cookieSettings = {
 const mutations = {
   async createItem(parent, args, ctx, info) {
     //TODO: check if they're logged in
+    if(!ctx.request.userId) {
+      throw new Error('You must be logged in for requested aciton')
+    }
     const item = await ctx.db.mutation.createItem({
       data: { ...args }
     }, info)
@@ -85,6 +89,18 @@ const mutations = {
       where: { email: args.email },
       data: { resetToken, resetTokenExpiry}
     })
+    
+    //email reset token
+    const mailResponse = await transport.sendMail({
+      from: 'testEcom.com',
+      to: user.email,
+      subject: 'Your password reset token',
+      html: makeNiceEmail(`Your password reset token is here
+      \n\n <a href="${process.env.FRONTEND_URL}/reset?resetToken=${resetToken}">
+      Click here to reset
+      </a> `)
+    })
+    
     return { message: 'Reset request received'}
   },
   async resetPassword(parent, args ,ctx, info) {
