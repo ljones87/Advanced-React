@@ -29,16 +29,17 @@
     "next-with-apollo": "^3.4.0",
     "nprogress": "^0.2.0",
     "prop-types": "^15.6.2",
-    "react": "^16.5.2",
+    "react": "^16.8.6",
     "react-adopt": "^0.6.0",
     "react-apollo": "^2.2.1",
-    "react-dom": "^16.5.2",
+    "react-dom": "^16.8.6",
     "react-stripe-checkout": "^2.6.3",
     "react-transition-group": "^2.5.0",
     "styled-components": "^3.4.9",
     "waait": "^1.0.2"
   },
   "devDependencies": {
+    "@babel/plugin-transform-async-to-generator": "^7.4.0",
     "babel-jest": "^23.6.0",
     "babel-plugin-module-resolver": "^3.1.1",
     "casual": "^1.5.19",
@@ -75,7 +76,8 @@
             {
               "ssr": true,
               "displayName": true
-            }
+            },
+            "@babel/plugin-transform-async-to-generator"
           ]
         ]
       },
@@ -89,7 +91,8 @@
             {
               "ssr": true,
               "displayName": true
-            }
+            },
+            "@babel/plugin-transform-async-to-generator"
           ]
         ]
       },

@@ -39,7 +39,7 @@ const handleSubmit = (
     });
 };
 
-let SignIn = props => {
+export let SignIn = props => {
   const email = "email";
   const password = "password";
   const { isSubmitting, errors } = props;

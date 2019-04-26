@@ -60,7 +60,6 @@ export default class CreateItem extends Component {
   }
 
   createItem = async (e) => {
-    console.log('SUBMIT CLICKED')
     e.preventDefault();
     const res = await createItem(this.state)
     Router.push({
