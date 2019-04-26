@@ -16,7 +16,15 @@ const mutations = {
       throw new Error('You must be logged in for requested aciton')
     }
     const item = await ctx.db.mutation.createItem({
-      data: { ...args }
+      data: {
+        ...args,
+        //how we create a relationship between item and user
+        user: {
+          connect: {
+            id: ctx.request.userId
+          }
+        }
+      }
     }, info)
     return item;
   },
