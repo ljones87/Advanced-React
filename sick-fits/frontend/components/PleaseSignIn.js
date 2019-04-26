@@ -1,5 +1,5 @@
 import { graphql, compose } from "react-apollo";
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { CURRENT_USER_QUERY } from "./User";
 import SignIn from "./SignIn";
 
@@ -8,15 +8,15 @@ const PleaseSignIn = props => {
     data: { refetch }
   } = props;
   const [user, setUser] = useState();
-  useEffect(() => {
+
+  useMemo(() => {
     const fetchUser = async () => {
       const user = await refetch(CURRENT_USER_QUERY);
-
       setUser(user.data.me);
     };
     fetchUser();
-  }, {});
-
+  }, [{}]);
+  
   if (!user) {
     return (
       <div>

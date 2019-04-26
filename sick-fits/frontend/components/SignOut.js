@@ -15,7 +15,9 @@ const SIGN_OUT = gql`
 const SignOut = props => {
   const { mutate, data: { refetch} } = props;
   const signout = () =>  {
-      mutate().then(() => refetch(CURRENT_USER_QUERY))
+      mutate().then(() => {
+        refetch(CURRENT_USER_QUERY)
+      })
   }
   return (
     <button onClick={signout}>
