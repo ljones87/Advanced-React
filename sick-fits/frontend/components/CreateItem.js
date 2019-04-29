@@ -1,9 +1,8 @@
-import React, { useState } from "react";
-import { Mutation, compose, graphql } from "react-apollo";
+import React from "react";
+import { compose, graphql } from "react-apollo";
 import Router from "next/router";
 import Form from "./styles/StyledForm";
 import { withFormik, Field, Form as FormikForm } from "formik";
-import formatMoney from "../lib/formatMoney";
 import gql from "graphql-tag";
 import Error from "./ErrorMessage";
 import { CLOUD_URL } from "../secrets";
@@ -68,7 +67,7 @@ let CreateItem = props => {
   };
 
   const { isSubmitting, errors, values  } = props;
-
+  console.log(values)
   return (
       <Form>
         <FormikForm method="post" onSubmit={props.handleSubmit}>

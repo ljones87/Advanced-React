@@ -1,21 +1,20 @@
 import Link from "next/link";
 import NavStyles from "./styles/NavStyles";
-import User from "../components/User";
-import gql from 'graphql-tag';
-import { graphql, compose } from 'react-apollo';
-import SignOut from './SignOut';
+import gql from "graphql-tag";
+import { graphql, compose } from "react-apollo";
+import { TOGGLE_CART_MUTATION } from "./Cart";
+import { CURRENT_USER_QUERY } from "./User";
 
+import SignOut from "./SignOut";
 
-const Nav = props => (
-  <User>
-    {({ data: { me } }) => (
-      <NavStyles>
-        <Link href="/items">
-          <a>Shop</a>
-        </Link>
-        {me && (
-          <>
-         <Link href="/sell">
+const Nav = ({ toggleCart, data: { me } }) => (
+  <NavStyles>
+    <Link href="/items">
+      <a>Shop</a>
+    </Link>
+    {me && (
+      <>
+        <Link href="/sell">
           <a>Sell</a>
         </Link>
         <Link href="/me">
@@ -25,16 +24,18 @@ const Nav = props => (
           <a>Orders</a>
         </Link>
         <SignOut />
-        </>
-        )}
-        {!me && (
-            <Link href="/signup">
-            <a>Sign In</a>
-          </Link>
-        )}
-      </NavStyles>
+        <button onClick={toggleCart}>My Cart</button>
+      </>
     )}
-  </User>
+    {!me && (
+      <Link href="/signup">
+        <a>Sign In</a>
+      </Link>
+    )}
+  </NavStyles>
 );
 
-export default Nav;
+export default compose(
+  graphql(TOGGLE_CART_MUTATION, { name: "toggleCart" }),
+  graphql(CURRENT_USER_QUERY)
+)(Nav);
