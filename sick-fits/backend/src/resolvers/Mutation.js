@@ -165,12 +165,12 @@ const mutations = {
     }, info)
     //check if item is already in cart and increment by 1 if is
     if(existingCartItem) {
-      
       return await ctx.db.mutation.updateCartItem({ 
         where: { id: existingCartItem.id},
         data: { quantity: existingCartItem.quantity +1}
       });
     } 
+     //if not, create fresh cart item
     return ctx.db.mutation.createCartItem({
       data: {
         user: {
@@ -180,8 +180,23 @@ const mutations = {
           connect: { id: args.id }
         }
       }
+    }, info)   
+  },
+  async removeFromCart(parent, args, ctx, info) {
+    // find cart item
+    const cartItem = await ctx.db.query.cartItem({
+      where: { id: args.id }
+    }, `{ id, user { id } }`) 
+    
+    if(!cartItem) throw new Error('No cart item')
+    // make sure they own cart item
+    if(cartItem.user.id !== ctx.request.userId) {
+      throw new Error('Not Authorized')
+    }
+    // delete cart item
+    await ctx.db.mutation.deleteCartItem({
+      where: { id: args.id }
     }, info)
-    //if not, create fresh cart item
   }
 }; 
 
