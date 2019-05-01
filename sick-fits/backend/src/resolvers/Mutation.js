@@ -194,7 +194,7 @@ const mutations = {
       throw new Error('Not Authorized')
     }
     // delete cart item
-    await ctx.db.mutation.deleteCartItem({
+    return await ctx.db.mutation.deleteCartItem({
       where: { id: args.id }
     }, info)
   }
