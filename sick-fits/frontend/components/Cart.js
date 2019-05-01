@@ -1,6 +1,8 @@
-import React, { useEffect } from "react";
-import { Query, Mutation, compose, graphql } from "react-apollo";
+import React  from "react";
+import { compose, graphql, Mutation, Query } from "react-apollo";
 import gql from "graphql-tag";
+// import { adopt } from 'react-adopt';
+import formatMoney from '../lib/formatMoney'
 import { CURRENT_USER_QUERY } from "./User";
 import CartStyles from "./styles/CartStyles";
 import Supreme from "./styles/Supreme";
@@ -20,12 +22,25 @@ const TOGGLE_CART_MUTATION = gql`
   }
 `;
 
+// const Composed = adopt({
+//   user: <User />,
+//   toggleCart: <Mutation mutation={TOGGLE_CART_MUTATION} />,
+//   localState: <Query query={LOCAL_STATE_QUERY} />
+// });
+
 const Cart = props => {
   const {
     localStateQuery: { cartOpen },
     currentUserQuery: { me },
     toggleCart
   } = props;
+
+  const totalPriceCalc = () => {
+    return me.cart.reduce((a, b) => {
+      if(!b.item) return a;
+      return a += (b.item.price * b.quantity)
+    },0)
+   }
 
   if (!me) return null;
   return (
@@ -47,7 +62,7 @@ const Cart = props => {
         ))}
       </ul>
       <footer>
-        <p>$100</p>
+        <p>{formatMoney(totalPriceCalc())}</p>
         <SickButton>Checkout</SickButton>
       </footer>
     </CartStyles>

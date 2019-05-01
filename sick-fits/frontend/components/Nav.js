@@ -5,6 +5,7 @@ import { graphql, compose } from "react-apollo";
 import { TOGGLE_CART_MUTATION } from "./Cart";
 import { CURRENT_USER_QUERY } from "./User";
 
+import CartCount from './CartCount';
 import SignOut from "./SignOut";
 
 const Nav = ({ toggleCart, data: { me } }) => (
@@ -24,7 +25,14 @@ const Nav = ({ toggleCart, data: { me } }) => (
           <a>Orders</a>
         </Link>
         <SignOut />
-        <button onClick={toggleCart}>My Cart</button>
+        <button onClick={toggleCart}>
+          My Cart
+          <CartCount
+            count={me.cart.reduce((a,b) => {
+              return a + b.quantity
+            }, 0)}
+          />
+        </button>
       </>
     )}
     {!me && (

@@ -20,7 +20,7 @@ let AddToCart = props => {
      .then(() => {
       refetch(CURRENT_USER_QUERY)
     }).catch(err => {
-   
+      alert(err)
     })
   }
     
