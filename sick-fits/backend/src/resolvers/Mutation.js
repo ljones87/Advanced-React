@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const { randomBytes } = require('crypto');
 const { promisify } = require('util');
 const { transport, makeNiceEmail } = require('../mail');
+const stripe = require('../stripe');
 
 const cookieSettings = {
   httpOnly: true,
@@ -197,6 +198,68 @@ const mutations = {
     return await ctx.db.mutation.deleteCartItem({
       where: { id: args.id }
     }, info)
+  },
+  async createOrder(parent, args, ctx, info) {
+    // query current user and make sure theyre signed in
+    const { userId } = ctx.request;
+    const { token } = args;
+    if(!userId) throw new Error('you must be signed in to complete this order')
+    const user = await ctx.db.query.user({
+      where: {id: userId}
+    }, `{
+      id
+      name
+      email
+      cart {
+        id
+        quantity
+        item { title price id description image largeImage}
+      }
+    }`)
+    // recalc the total for price
+    const amount = user.cart.reduce((tally, item) => tally + item.item.price * item.quantity, 0)
+     // create the stripe charge ( turn token into money)
+    const charge = await stripe.charges.create({
+      amount,
+      currency: 'USD',
+      source: token,
+    })
+    console.log('charge', charge)
+    // convert cartItems to orderItems
+  
+    const orderItems = user.cart.map(cartItem => ({     
+          title: cartItem.item.title,
+          description: cartItem.item.description,
+          image: cartItem.item.image,
+          largeImage: cartItem.item.largeImage,
+          price: cartItem.item.price,
+          quantity: cartItem.quantity,
+          user: { connect: { id: userId }}
+        }
+      ))
+      
+    // create order
+    const order = await ctx.db.mutation.createOrder({
+      data: {
+        total: charge.amount,
+        charge: charge.id,
+        items: { create: orderItems },
+        user: { connect: { id: userId }}
+      }
+    }, info).catch(err => {
+      console.log(err)
+      throw new Error('something went wrong')
+    })
+    // clean up - clear users cart, delete cart items.
+    user.cart.forEach(async item => (
+      await ctx.db.mutation.deleteCartItem({
+        where: {
+          id: item.id
+        }
+      })
+    ))
+    // return order to client
+      return order
   }
 }; 
 
