@@ -1,14 +1,21 @@
-import React  from "react";
+import React from "react";
 import { compose, graphql, Mutation, Query } from "react-apollo";
 import gql from "graphql-tag";
 // import { adopt } from 'react-adopt';
-import formatMoney from '../lib/formatMoney'
+import formatMoney from "../lib/formatMoney";
 import { CURRENT_USER_QUERY } from "./User";
 import CartStyles from "./styles/CartStyles";
 import Supreme from "./styles/Supreme";
 import CloseButton from "./styles/CloseButton";
 import SickButton from "./styles/SickButton";
-import CartItem from './CartItem';
+import CartItem from "./CartItem";
+import TakeMoney from './TakeMoney';
+
+// const Composed = adopt({
+//   user: <User />,
+//   toggleCart: <Mutation mutation={TOGGLE_CART_MUTATION} />,
+//   localState: <Query query={LOCAL_STATE_QUERY} />
+// });
 
 const LOCAL_STATE_QUERY = gql`
   query {
@@ -22,11 +29,16 @@ const TOGGLE_CART_MUTATION = gql`
   }
 `;
 
-// const Composed = adopt({
-//   user: <User />,
-//   toggleCart: <Mutation mutation={TOGGLE_CART_MUTATION} />,
-//   localState: <Query query={LOCAL_STATE_QUERY} />
-// });
+const totalPriceCalc = me => {
+  const total = me.cart.reduce((a, b) => {
+    if (!b.item) return a;
+    return (a += b.item.price * b.quantity);
+  }, 0);
+  return formatMoney(total);
+};
+
+const cartItemList = me =>
+  me.cart.map(item => <CartItem key={item.id} cartItem={item} />);
 
 const Cart = props => {
   const {
@@ -35,13 +47,9 @@ const Cart = props => {
     toggleCart
   } = props;
 
-  const totalPriceCalc = () => {
-    return me.cart.reduce((a, b) => {
-      if(!b.item) return a;
-      return a += (b.item.price * b.quantity)
-    },0)
-   }
-
+  const formattedTotal = me ? totalPriceCalc(me) : null;
+  const cartItems = me? cartItemList(me): null;
+  
   if (!me) return null;
   return (
     <CartStyles open={cartOpen}>
@@ -54,16 +62,15 @@ const Cart = props => {
           me.cart.length > 1 ? "s" : ""
         } in your cart.`}</p>
       </header>
-      <ul>
-        {me.cart.map(item => (
-          <CartItem key={item.id} 
-            cartItem={item}
-          />
-        ))}
-      </ul>
+      <ul>{cartItems}</ul>
       <footer>
-        <p>{formatMoney(totalPriceCalc())}</p>
-        <SickButton>Checkout</SickButton>
+      <p>{formattedTotal}</p>
+      {me.cart.length ? 
+          <TakeMoney>
+            <SickButton>Checkout</SickButton>
+          </TakeMoney>
+          : null
+        }
       </footer>
     </CartStyles>
   );

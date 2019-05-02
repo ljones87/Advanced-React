@@ -1,9 +1,11 @@
-import React from 'react';
-import { Mutation } from 'react-apollo';
-import styled from 'styled-components';
-import PropTypes from 'prop-types';
-import gql from 'graphql-tag';
-import { CURRENT_USER_QUERY } from './User';
+import React from "react";
+import { Mutation } from "react-apollo";
+import styled from "styled-components";
+import PropTypes from "prop-types";
+import memoize from "lodash/memoize";
+
+import gql from "graphql-tag";
+import { CURRENT_USER_QUERY } from "./User";
 
 const REMOVE_FROM_CART_MUTATION = gql`
   mutation removeFromCart($id: ID!) {
@@ -21,38 +23,32 @@ const BigButton = styled.button`
     color: ${props => props.theme.red};
     cursor: pointer;
   }
-`
+`;
 
-const RemoveFromCart = ({ id }) => {
-
-  const update =  ( cache, payload ) => {
-      // 1. first read the cache
-      if(!payload.data.removeFromCart) return;
-      else {
-        const data = cache.readQuery({ query: CURRENT_USER_QUERY });
-        // 2. remove that item from the cart
-        console.log('payload', payload)
-        console.log("before", data.me.cart)
-        const cartItemId = payload.data.removeFromCart.id;
-        data.me.cart = data.me.cart.filter(cartItem => cartItem.id !== cartItemId);
-        console.log("after", data.me.cart)
-        // 3. write it back to the cache
-        cache.writeQuery({ query: CURRENT_USER_QUERY, data });
-      }
-      
+const update = (cache, payload) => {
+  // 1. first read the cache
+     const data = cache.readQuery({ query: CURRENT_USER_QUERY });
+      const cartItemId = payload.data.removeFromCart.id;
+      // 2. remove that item from the cart
+      data.me.cart = data.me.cart.filter(
+        cartItem => cartItem.id !== cartItemId
+      );
+       // 3. write it back to the cache
+    cache.writeQuery({ query: CURRENT_USER_QUERY, data });
   }
 
+const RemoveFromCart = ({ id }) => {
   return (
     <Mutation
       mutation={REMOVE_FROM_CART_MUTATION}
-      variables={{ id: id }}
+      variables={{ id }}
       update={update}
       optimisticResponse={{
-        __typename: 'Mutation',
+        __typename: "Mutation",
         removeFromCart: {
-          __typename: 'CartItem',
-          id,
-        },
+          __typename: "CartItem",
+          id
+        }
       }}
     >
       {(removeFromCart, { loading, error }) => (
@@ -68,6 +64,6 @@ const RemoveFromCart = ({ id }) => {
       )}
     </Mutation>
   );
-}
+};
 
-export default RemoveFromCart
+export default RemoveFromCart;
