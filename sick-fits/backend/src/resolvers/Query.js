@@ -24,10 +24,6 @@ const Query = {
   },
   async order(parent, args, ctx, info) {
     // 1 make sure they're logged in
-    console.log('CTX', ctx)
-    console.log('Info', info)
-    console.log('args', args)
-    console.log('parent', parent)
     if(!ctx.request.userId) {
       throw new Error('You are not logged in ')
     }
@@ -44,6 +40,16 @@ const Query = {
     }
     // return order
     return order;
+  },
+  async orders(parent, args, ctx, info) {
+    const { userId } = ctx.request;
+    if(!userId) throw new Error('Please login to view orders')
+    
+    const orders = await ctx.db.query.orders({
+      where: { user: { id: userId }  }
+    }, info)
+
+    return orders
   }
 };
 
