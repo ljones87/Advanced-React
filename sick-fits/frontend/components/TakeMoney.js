@@ -21,22 +21,26 @@ const CREATE_ORDER_MUTATION = gql`
     }
   }
 `;
+
 const totalItems = cart =>
   cart.reduce((tally, item) => {
     tally + item.quantity;
   }, 0);
 
 const onToken = async (res, createOrder )=> {
-  console.log("on token called");
-  console.log(res.id);
+NProgress.start()
 const order = await createOrder({
     variables: {
       token: res.id
     }
   }).catch(err => alert(err.message))
-  console.log('ORDER', order)
-  return order
+
+  Router.push({
+    pathname: '/order',
+    query: { id: order.data.createOrder.id }
+  })
 };
+
 const TakeMoney = props => {
   return (
     <>
@@ -47,15 +51,15 @@ const TakeMoney = props => {
             refetchQueries={[ {query: CURRENT_USER_QUERY} ]}>
             {createOrder => (
               <StripeCheckout
-              amount={calcTotalPrice(me.cart)}
-              name="sick fits"
-              description={`Order of ${totalItems(me.cart)} items`}
-              image={me.cart.length && me.cart[0].item.image}
-              stripeKey="pk_test_owro2B6gR42iVBXPTSiENQuE00adgbwoj6"
-              currency="USD"
-              email={me.email}
-              token={res => onToken(res, createOrder)}
-            >
+                amount={calcTotalPrice(me.cart)}
+                name="sick fits"
+                description={`Order of ${totalItems(me.cart)} items`}
+                image={me.cart.length && me.cart[0].item.image}
+                stripeKey="pk_test_owro2B6gR42iVBXPTSiENQuE00adgbwoj6"
+                currency="USD"
+                email={me.email}
+                token={res => onToken(res, createOrder)}
+              >
               {props.children}
             </StripeCheckout>
             )}

@@ -224,9 +224,8 @@ const mutations = {
       currency: 'USD',
       source: token,
     })
-    console.log('charge', charge)
+
     // convert cartItems to orderItems
-  
     const orderItems = user.cart.map(cartItem => ({     
           title: cartItem.item.title,
           description: cartItem.item.description,
